@@ -4,11 +4,9 @@ import com.stephen.a2.response.BaseResponse;
 
 public class LoginResponse extends BaseResponse {
 
-    Long id;
     String token;
 
-    public LoginResponse(Long id, String token) {
-        this.id = id;
+    public LoginResponse(String token) {
         this.token = token;
     }
 
@@ -20,11 +18,4 @@ public class LoginResponse extends BaseResponse {
         this.token = token;
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
 }

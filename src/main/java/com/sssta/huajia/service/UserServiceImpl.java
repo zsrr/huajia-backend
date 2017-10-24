@@ -1,11 +1,13 @@
 package com.sssta.huajia.service;
 
 import com.sssta.huajia.dao.UserRepository;
+import com.sssta.huajia.domain.User;
 import com.sssta.huajia.dto.LoginResponse;
-import com.sssta.huajia.dto.RegisterResponse;
 import com.stephen.a2.authorization.TokenManager;
 import com.stephen.a2.authorization.TokenModel;
+import com.stephen.a2.response.BaseResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import redis.clients.jedis.JedisPool;
@@ -25,11 +27,17 @@ public class UserServiceImpl extends JedisService implements UserService {
 
     @Override
     @Transactional
-    public RegisterResponse register(String phone, String type) {
+    public BaseResponse register(String phone, String type) {
+
+        BaseResponse baseResponse = new BaseResponse();
+        baseResponse.setStatus(HttpStatus.CREATED.value());
+
         if (type.equals("old")) {
-            return new RegisterResponse(userDAO.oldRegister(phone));
+            userDAO.oldRegister(phone);
+            return baseResponse;
         } else if (type.equals("young")) {
-            return new RegisterResponse(userDAO.youngRegister(phone));
+            userDAO.youngRegister(phone);
+            return baseResponse;
         }
 
         return null;
@@ -37,14 +45,10 @@ public class UserServiceImpl extends JedisService implements UserService {
 
     @Override
     @Transactional
-    public LoginResponse login(String phone, String type) {
-        Long userId = 0L;
-        if (type.equals("old")) {
-            userId = userDAO.getOldUserId(phone);
-        } else if (type.equals("young")) {
-            userId = userDAO.getYoungUserId(phone);
-        }
-        TokenModel model = tokenManager.createToken(userId);
-        return new LoginResponse(userId, model.getToken());
+    public LoginResponse login(String phone, String registrationId) {
+        User user = userDAO.getUserByPhone(phone);
+        user.setRegistrationId(registrationId);
+        TokenModel model = tokenManager.createToken(user.getPhone());
+        return new LoginResponse(model.getToken());
     }
 }

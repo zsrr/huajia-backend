@@ -1,13 +1,13 @@
 package com.sssta.huajia.dao;
 
 import com.sssta.huajia.domain.OldUser;
+import com.sssta.huajia.domain.User;
 import com.sssta.huajia.domain.YoungUser;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import javax.persistence.TypedQuery;
 
 @Repository
 public class UserDAO extends BaseDAO implements UserRepository {
@@ -20,8 +20,8 @@ public class UserDAO extends BaseDAO implements UserRepository {
     @Override
     public boolean hasOldUser(String phone) {
         try {
-            TypedQuery<Long> query = getCurrentSession().createQuery("select id from OldUser o where o.phone = :phone").setParameter("phone", phone);
-            return query.getSingleResult() != null;
+            OldUser ou = getCurrentSession().get(OldUser.class, phone);
+            return ou != null;
         } catch (Exception e) {
             return false;
         }
@@ -30,47 +30,43 @@ public class UserDAO extends BaseDAO implements UserRepository {
     @Override
     public boolean hasYoungUser(String phone) {
         try {
-            TypedQuery<Long> query = getCurrentSession().createQuery("select id from YoungUser o where o.phone = :phone").setParameter("phone", phone);
-            return query.getSingleResult() != null;
+            YoungUser ou = getCurrentSession().get(YoungUser.class, phone);
+            return ou != null;
         } catch (Exception e) {
             return false;
         }
     }
 
     @Override
-    public Long oldRegister(String phone) {
+    public void oldRegister(String phone) {
         OldUser oldUser = new OldUser();
         oldUser.setPhone(phone);
         getCurrentSession().persist(oldUser);
-        return oldUser.getId();
     }
 
     @Override
-    public Long youngRegister(String phone) {
+    public void youngRegister(String phone) {
         YoungUser youngUser = new YoungUser();
         youngUser.setPhone(phone);
         getCurrentSession().persist(youngUser);
-        return youngUser.getId();
     }
 
     @Override
-    public Long getOldUserId(String phone) {
+    public boolean isYoungBoundToOld(String oldPhone, String youngPhone) {
         Session session = getCurrentSession();
-        TypedQuery<Long> query = session.createQuery("select id from OldUser o where o.phone = :phone").setParameter("phone", phone);
-        return query.getSingleResult();
+        OldUser ou = session.get(OldUser.class, oldPhone);
+        return ou.getChild().getPhone().equals(youngPhone);
     }
 
     @Override
-    public Long getYoungUserId(String phone) {
-        Session session = getCurrentSession();
-        TypedQuery<Long> query = session.createQuery("select id from YoungUser o where o.phone = :phone").setParameter("phone", phone);
-        return query.getSingleResult();
+    public String getRegistrationIdByPhone(String phone) {
+        User user = getCurrentSession().get(User.class, phone);
+        return user.getRegistrationId();
     }
 
     @Override
-    public boolean isYoungBoundToOld(Long oldId, String phone) {
+    public User getUserByPhone(String phone) {
         Session session = getCurrentSession();
-        TypedQuery<Long> query = session.createQuery("select count(o) from OldUser o where o.child.phone = :phone").setParameter("phone", phone);
-        return query.getSingleResult() > 0L;
+        return session.get(User.class, phone);
     }
 }

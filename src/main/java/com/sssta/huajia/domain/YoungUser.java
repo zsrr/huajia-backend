@@ -6,31 +6,10 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Entity
-@Table(name = "YOUNG_USER", indexes = @Index(name = "young_phone_index", columnList = "phone", unique = true))
-public class YoungUser {
-
-    @Id
-    @GeneratedValue(generator = Constants.PERFECT_SEQUENCE)
-    protected Long id;
-
-    @Column(nullable = false, unique = true, length = 14)
-    @NotNull
-    protected String phone;
+public class YoungUser extends User {
 
     @OneToMany(mappedBy = "child")
     protected Set<OldUser> parents = new HashSet<>();
-
-    public String getPhone() {
-        return phone;
-    }
-
-    public void setPhone(String phone) {
-        this.phone = phone;
-    }
-
-    public Long getId() {
-        return id;
-    }
 
     public Set<OldUser> getParents() {
         return parents;

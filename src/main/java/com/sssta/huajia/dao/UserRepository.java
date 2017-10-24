@@ -1,19 +1,21 @@
 package com.sssta.huajia.dao;
 
+import com.sssta.huajia.domain.User;
+
 public interface UserRepository {
 
     boolean hasOldUser(String phone);
 
     boolean hasYoungUser(String phone);
 
-    Long oldRegister(String phone);
+    void oldRegister(String phone);
 
-    Long youngRegister(String phone);
+    void youngRegister(String phone);
 
-    Long getOldUserId(String phone);
+    boolean isYoungBoundToOld(String oldPhone, String youngPhone);
 
-    Long getYoungUserId(String phone);
+    String getRegistrationIdByPhone(String phone);
 
-    boolean isYoungBoundToOld(Long oldId, String phone);
+    User getUserByPhone(String phone);
 
 }
