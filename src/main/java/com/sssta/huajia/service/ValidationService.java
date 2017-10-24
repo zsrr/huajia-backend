@@ -5,5 +5,7 @@ public interface ValidationService {
 
     void loginValidation(String phone, String type);
 
-    void beforeBindingValidation(Long oldId, String phone);
+    void beforeBindingValidation(String oldPhone, String youngPhone);
+
+    void finalBindingValidation(String oldPhone, String youngPhone);
 }

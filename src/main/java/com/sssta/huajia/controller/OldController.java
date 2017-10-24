@@ -1,6 +1,7 @@
 package com.sssta.huajia.controller;
 
 
+import com.sssta.huajia.service.JPushService;
 import com.sssta.huajia.service.JSMSService;
 import com.sssta.huajia.service.UserService;
 import com.sssta.huajia.service.ValidationService;
@@ -19,9 +20,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/old")
 public class OldController extends BaseController {
 
+    private final JPushService jPushService;
+
     @Autowired
-    public OldController(UserService userService, ValidationService validationService, JSMSService jsmsService) {
+    public OldController(UserService userService, ValidationService validationService, JSMSService jsmsService, JPushService jPushService) {
         super(userService, validationService, jsmsService);
+        this.jPushService = jPushService;
     }
 
     @Override
@@ -31,8 +35,9 @@ public class OldController extends BaseController {
 
     @Authorization
     @RequestMapping(value = "/bind", method = RequestMethod.POST)
-    public ResponseEntity bind(@CurrentUserId Long id, @RequestParam("target") String phone) {
-        validationService.beforeBindingValidation(id, phone);
+    public ResponseEntity bind(@CurrentUserId String oldPhone, @RequestParam("target") String youngPhone) {
+        validationService.beforeBindingValidation(oldPhone, youngPhone);
+        jPushService.bind(oldPhone, youngPhone);
         return new ResponseEntity(new BaseResponse(), HttpStatus.OK);
     }
 }

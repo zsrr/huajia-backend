@@ -16,6 +16,8 @@ public interface UserRepository {
 
     String getRegistrationIdByPhone(String phone);
 
-    User getUserByPhone(String phone);
+    <T extends User> T getUserByPhone(String phone, Class<T> type);
+
+    <T extends User> T getUserRefByPhone(String phone, Class<T> type);
 
 }

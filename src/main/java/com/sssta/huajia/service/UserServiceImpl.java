@@ -1,7 +1,9 @@
 package com.sssta.huajia.service;
 
 import com.sssta.huajia.dao.UserRepository;
+import com.sssta.huajia.domain.OldUser;
 import com.sssta.huajia.domain.User;
+import com.sssta.huajia.domain.YoungUser;
 import com.sssta.huajia.dto.LoginResponse;
 import com.stephen.a2.authorization.TokenManager;
 import com.stephen.a2.authorization.TokenModel;
@@ -46,9 +48,17 @@ public class UserServiceImpl extends JedisService implements UserService {
     @Override
     @Transactional
     public LoginResponse login(String phone, String registrationId) {
-        User user = userDAO.getUserByPhone(phone);
+        User user = userDAO.getUserByPhone(phone, User.class);
         user.setRegistrationId(registrationId);
         TokenModel model = tokenManager.createToken(user.getPhone());
         return new LoginResponse(model.getToken());
+    }
+
+    @Override
+    @Transactional
+    public BaseResponse bind(String oldPhone, String youngPhone) {
+        OldUser ou = userDAO.getUserByPhone(oldPhone, OldUser.class);
+        ou.setChild(userDAO.getUserRefByPhone(youngPhone, YoungUser.class));
+        return new BaseResponse();
     }
 }

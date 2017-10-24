@@ -9,4 +9,6 @@ public interface UserService {
 
     LoginResponse login(String phone, String registrationId);
 
+    BaseResponse bind(String oldPhone, String youngPhone);
+
 }

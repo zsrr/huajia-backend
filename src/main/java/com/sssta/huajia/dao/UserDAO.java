@@ -65,8 +65,15 @@ public class UserDAO extends BaseDAO implements UserRepository {
     }
 
     @Override
-    public User getUserByPhone(String phone) {
+    public <T extends User> T getUserByPhone(String phone, Class<T> type) {
         Session session = getCurrentSession();
-        return session.get(User.class, phone);
+        return session.get(type, phone);
     }
+
+    @Override
+    public <T extends User> T getUserRefByPhone(String phone, Class<T> type) {
+        Session session = getCurrentSession();
+        return session.getReference(type, phone);
+    }
+
 }
