@@ -1,5 +1,6 @@
 package com.sssta.huajia.controller;
 
+import com.sssta.huajia.Constants;
 import com.sssta.huajia.dto.SMSVerifyMessage;
 import com.sssta.huajia.dto.VerificationResponse;
 import com.sssta.huajia.service.JSMSService;
@@ -33,10 +34,10 @@ public abstract class BaseController {
     }
 
     private ResponseEntity baseFlow(String action, String phone, SMSVerifyMessage verifyMessage, Operation operation) throws Exception {
-        if (action.equals("send")) {
+        if (action.equals(Constants.ACTION_SEND)) {
             String msgId = jsmsService.sendValidCode(phone);
             return new ResponseEntity(new VerificationResponse(msgId), HttpStatus.OK);
-        } else if (action.equals("verify")) {
+        } else if (action.equals(Constants.ACTION_VERIFY)) {
             checkVerifyMessage(verifyMessage);
             if (jsmsService.isCodeValid(phone, verifyMessage.getMsgId(), verifyMessage.getCode())) {
                 return new ResponseEntity(operation.operate(), HttpStatus.OK);

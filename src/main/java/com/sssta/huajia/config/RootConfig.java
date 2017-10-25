@@ -4,6 +4,7 @@ import cn.jiguang.common.ClientConfig;
 import cn.jpush.api.JPushClient;
 import cn.jsms.api.JSMSClient;
 import cn.jsms.api.common.JSMSConfig;
+import com.sssta.huajia.Constants;
 import com.sssta.huajia.util.PropertiesUtils;
 import org.hibernate.SessionFactory;
 import org.springframework.cache.annotation.EnableCaching;
@@ -186,7 +187,7 @@ public class RootConfig {
         return new ElasticsearchTemplate(client);
     }*/
 
-    @Bean(name = "asyncExecutor")
+    @Bean(name = Constants.ASYNC_EXECUTOR)
     public Executor asyncTaskExecutor() {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
         executor.setCorePoolSize(20);

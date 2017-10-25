@@ -1,5 +1,6 @@
 package com.sssta.huajia.config;
 
+import com.sssta.huajia.Constants;
 import com.stephen.a2.config.A2WebConfig;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -30,6 +31,6 @@ public class WebConfig extends A2WebConfig {
 
     @Override
     protected String getSuffix() {
-        return "-huajia-token";
+        return Constants.TOKEN_SUFFIX;
     }
 }

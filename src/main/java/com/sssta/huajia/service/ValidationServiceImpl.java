@@ -1,5 +1,6 @@
 package com.sssta.huajia.service;
 
+import com.sssta.huajia.Constants;
 import com.sssta.huajia.dao.UserRepository;
 import com.stephen.a2.exception.NotFoundException;
 import com.stephen.a2.exception.ResourceConflictException;
@@ -11,29 +12,28 @@ import redis.clients.jedis.JedisPool;
 
 @Service
 @Transactional
-public class ValidationServiceImpl implements ValidationService {
+public class ValidationServiceImpl extends JedisService implements ValidationService {
 
     private final UserRepository userDAO;
-    private final JedisPool pool;
 
     @Autowired
     public ValidationServiceImpl(UserRepository userDAO, JedisPool pool) {
+        super(pool);
         this.userDAO = userDAO;
-        this.pool = pool;
     }
 
     @Override
     public void registerValidation(String phone, String type) {
-        if ((type.equals("old") && userDAO.hasOldUser(phone)) ||
-                (type.equals("young") && userDAO.hasYoungUser(phone))) {
+        if ((type.equals(Constants.TYPE_OLD) && userDAO.hasOldUser(phone)) ||
+                (type.equals(Constants.TYPE_YOUNG) && userDAO.hasYoungUser(phone))) {
             throw new ResourceConflictException();
         }
     }
 
     @Override
     public void loginValidation(String phone, String type) {
-        if ((type.equals("old") && !userDAO.hasOldUser(phone)) ||
-                (type.equals("young") && !userDAO.hasYoungUser(phone))) {
+        if ((type.equals(Constants.TYPE_OLD) && !userDAO.hasOldUser(phone)) ||
+                (type.equals(Constants.TYPE_YOUNG) && !userDAO.hasYoungUser(phone))) {
             throw new NotFoundException();
         }
     }
@@ -47,8 +47,8 @@ public class ValidationServiceImpl implements ValidationService {
 
     @Override
     public void finalBindingValidation(String oldPhone, String youngPhone) {
-        try (Jedis jedis = pool.getResource()) {
-            if (!jedis.sismember(JPushServiceImpl.REDIS_UNDETERMINED_BINDING_KEY, oldPhone + "-" + youngPhone)) {
+        try (Jedis jedis = getJedis()) {
+            if (!jedis.sismember(Constants.REDIS_UNDETERMINED_BINDING_KEY, oldPhone + "-" + youngPhone)) {
                 throw new NotFoundException();
             }
         }

@@ -1,6 +1,7 @@
 package com.sssta.huajia.controller;
 
 
+import com.sssta.huajia.Constants;
 import com.sssta.huajia.service.JPushService;
 import com.sssta.huajia.service.JSMSService;
 import com.sssta.huajia.service.UserService;
@@ -30,7 +31,7 @@ public class OldController extends BaseController {
 
     @Override
     protected String getType() {
-        return "old";
+        return Constants.TYPE_OLD;
     }
 
     @Authorization

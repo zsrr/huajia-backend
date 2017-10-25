@@ -6,6 +6,7 @@ import cn.jsms.api.JSMSClient;
 import cn.jsms.api.SendSMSResult;
 import cn.jsms.api.ValidSMSResult;
 import cn.jsms.api.common.model.SMSPayload;
+import com.sssta.huajia.Constants;
 import com.sssta.huajia.exception.JGException;
 import com.stephen.a2.exception.UnAuthorizedException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,8 +18,6 @@ import redis.clients.jedis.JedisPool;
 public class JSMSServiceImpl extends JedisService implements JSMSService {
 
     private JSMSClient client;
-
-    public static final String REDIS_VERIFIED_KEY = "huajia_verified";
 
     @Autowired
     public JSMSServiceImpl(JSMSClient client, JedisPool jedisPool) {
@@ -35,7 +34,7 @@ public class JSMSServiceImpl extends JedisService implements JSMSService {
         try (Jedis jedis = getJedis()) {
             SendSMSResult result = client.sendSMSCode(payload);
             String msgId = result.getMessageId();
-            jedis.sadd(REDIS_VERIFIED_KEY, phone + "-" + msgId.replace("-", ""));
+            jedis.sadd(Constants.REDIS_VERIFIED_KEY, phone + "-" + msgId.replace("-", ""));
             return result.getMessageId();
         } catch (APIConnectionException | APIRequestException e) {
             throw new JGException(e);
@@ -49,7 +48,7 @@ public class JSMSServiceImpl extends JedisService implements JSMSService {
             ValidSMSResult result = client.sendValidSMSCode(msgId, code);
             boolean value = result.getIsValid();
             if (value) {
-                jedis.srem(REDIS_VERIFIED_KEY, phone + "-" + msgId.replace("-", ""));
+                jedis.srem(Constants.REDIS_VERIFIED_KEY, phone + "-" + msgId.replace("-", ""));
             }
             return value;
         } catch (APIConnectionException | APIRequestException e) {
@@ -59,7 +58,7 @@ public class JSMSServiceImpl extends JedisService implements JSMSService {
 
     private void checkIfInVerifiedList(Jedis jedis, String phone, String msgId) {
         String s = msgId.replace("-", "");
-        if (!jedis.sismember(REDIS_VERIFIED_KEY, phone + "-" + s)) {
+        if (!jedis.sismember(Constants.REDIS_VERIFIED_KEY, phone + "-" + s)) {
             throw new UnAuthorizedException();
         }
     }

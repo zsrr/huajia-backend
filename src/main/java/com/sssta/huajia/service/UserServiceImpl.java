@@ -1,5 +1,6 @@
 package com.sssta.huajia.service;
 
+import com.sssta.huajia.Constants;
 import com.sssta.huajia.dao.UserRepository;
 import com.sssta.huajia.domain.OldUser;
 import com.sssta.huajia.domain.User;
@@ -15,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import redis.clients.jedis.JedisPool;
 
 @Service
+@Transactional
 public class UserServiceImpl extends JedisService implements UserService {
 
     private final UserRepository userDAO;
@@ -28,16 +30,15 @@ public class UserServiceImpl extends JedisService implements UserService {
     }
 
     @Override
-    @Transactional
     public BaseResponse register(String phone, String type) {
 
         BaseResponse baseResponse = new BaseResponse();
         baseResponse.setStatus(HttpStatus.CREATED.value());
 
-        if (type.equals("old")) {
+        if (type.equals(Constants.TYPE_OLD)) {
             userDAO.oldRegister(phone);
             return baseResponse;
-        } else if (type.equals("young")) {
+        } else if (type.equals(Constants.TYPE_YOUNG)) {
             userDAO.youngRegister(phone);
             return baseResponse;
         }
@@ -46,7 +47,6 @@ public class UserServiceImpl extends JedisService implements UserService {
     }
 
     @Override
-    @Transactional
     public LoginResponse login(String phone, String registrationId) {
         User user = userDAO.getUserByPhone(phone, User.class);
         user.setRegistrationId(registrationId);
@@ -55,7 +55,6 @@ public class UserServiceImpl extends JedisService implements UserService {
     }
 
     @Override
-    @Transactional
     public BaseResponse bind(String oldPhone, String youngPhone) {
         OldUser ou = userDAO.getUserByPhone(oldPhone, OldUser.class);
         ou.setChild(userDAO.getUserRefByPhone(youngPhone, YoungUser.class));
