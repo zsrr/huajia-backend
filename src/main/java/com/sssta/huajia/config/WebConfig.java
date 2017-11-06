@@ -2,12 +2,14 @@ package com.sssta.huajia.config;
 
 import com.sssta.huajia.Constants;
 import com.stephen.a2.config.A2WebConfig;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.FilterType;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.scheduling.annotation.EnableAsync;
+import org.springframework.scheduling.quartz.SchedulerFactoryBean;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import redis.clients.jedis.JedisPool;
 
@@ -32,5 +34,10 @@ public class WebConfig extends A2WebConfig {
     @Override
     protected String getSuffix() {
         return Constants.TOKEN_SUFFIX;
+    }
+
+    @Bean
+    public SchedulerFactoryBean schedulerFactoryBean() {
+        return new SchedulerFactoryBean();
     }
 }

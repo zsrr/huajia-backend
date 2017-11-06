@@ -71,7 +71,7 @@ public abstract class BaseController {
         });
     }
 
-    private void checkVerifyMessage(SMSVerifyMessage verifyMessage) throws MissingServletRequestPartException {
+    private static void checkVerifyMessage(SMSVerifyMessage verifyMessage) throws MissingServletRequestPartException {
         if (verifyMessage == null || verifyMessage.getMsgId() == null || verifyMessage.getCode() == null) {
             throw new MissingServletRequestPartException("verifymessage");
         }

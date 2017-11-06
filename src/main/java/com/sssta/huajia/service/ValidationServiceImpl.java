@@ -2,6 +2,7 @@ package com.sssta.huajia.service;
 
 import com.sssta.huajia.Constants;
 import com.sssta.huajia.dao.UserRepository;
+import com.sssta.huajia.dto.RemindBody;
 import com.stephen.a2.exception.NotFoundException;
 import com.stephen.a2.exception.ResourceConflictException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,6 +52,13 @@ public class ValidationServiceImpl extends JedisService implements ValidationSer
             if (!jedis.sismember(Constants.REDIS_UNDETERMINED_BINDING_KEY, oldPhone + "-" + youngPhone)) {
                 throw new NotFoundException();
             }
+        }
+    }
+
+    @Override
+    public void remindValidation(String phone, RemindBody remindBody) {
+        if (!userDAO.isYoungBoundToOld(remindBody.getTarget(), phone)) {
+            throw new NotFoundException();
         }
     }
 }

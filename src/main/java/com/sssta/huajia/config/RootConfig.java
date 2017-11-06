@@ -22,6 +22,7 @@ import redis.clients.jedis.JedisPoolConfig;
 
 import javax.naming.NamingException;
 import javax.sql.DataSource;
+import java.io.IOException;
 import java.util.Properties;
 import java.util.concurrent.Executor;
 
@@ -124,6 +125,11 @@ public class RootConfig {
         sfb.setAnnotatedPackages("com.sssta.huajia.domain");
         sfb.setPackagesToScan("com.sssta.huajia.domain");
         Properties properties = new Properties();
+        try {
+            properties.load(this.getClass().getClassLoader().getResourceAsStream("hibernate.properties"));
+        } catch (IOException e) {
+            throw new IllegalStateException(e);
+        }
         properties.put("hibernate.dialect", propertiesConfig.getDialect());
         properties.put("hibernate.hbm2ddl.auto", propertiesConfig.hbm2ddl_auto());
         properties.put("hibernate.show_sql", "true");
